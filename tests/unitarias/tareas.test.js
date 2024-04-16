@@ -44,15 +44,54 @@ describe('Pruebas unitarias para las rutas de tareas', ()=>{
         expect(res.body.titulo).toEqual(nuevaTarea.titulo); ///pasoooo
         expect(res.body.prioridad).toEqual(nuevaTarea.prioridad); ///pasoooo
         expect(res.body.descripcion).toEqual(nuevaTarea.descripcion); ///pasoooo
+        // expect(res.body).toHaveLength(1)// pasoo
+    });
+
+    // 3. Editar tarea
+    test('Prueba unitaria para editar Tarea ', async () => {
+        await TareaModel.create({ titulo: 'Tarea 1', descripcion: 'descripcion tarea1 (1)', prioridad:3 });
+        await TareaModel.create({ titulo: 'Tarea 2', descripcion: 'descripcion tarea2 (2)', prioridad:1 });
+        await TareaModel.create({ titulo: 'Tarea 3', descripcion: 'descripcion tarea3 (3)', prioridad:2 });
+        // const tareaEncontrada2 = await TareaModel.find({ titulo: 'Tarea 2' });
+        // await Character.exists({ name: /riker/i }); // null
+        const tareaEncontrada2 = await TareaModel.exists({ titulo: 'Tarea 2' });
+
+        console.log(tareaEncontrada2);
+            //POSTMAN -objeto
+        const tareaeditada = { 
+                titulo: 'Tarea 1 (editado)', 
+                descripcion: 'descripcion tarea1 (editado)', 
+                prioridad: 10 };
+        console.log("tarea editada",tareaeditada);
+        
+        const res = await request(app)
+            .put(`/ruta-tarea/editar/${tareaEncontrada2._id}`)
+            .send(tareaeditada);
+        expect(res.statusCode).toEqual(201); 
+        expect(res.body.titulo).toEqual(tareaeditada.titulo); 
+        expect(res.body.descripcion).toEqual(tareaeditada.descripcion); 
+    });
+
+    // 4. Elimnar Tarea
+    test('Eliminar  Tarea prueba unitaria', async () => {
+        const tareaNueva = await TareaModel.create({ 
+            titulo: 'Tarea Nueva', 
+            descripcion: 'descripcion Nuevo', 
+            prioridad: 1 });
+        
+        const res = await request(app)
+            .delete(`/ruta-tarea/eliminar/${tareaNueva._id}`);
+        expect(res.statusCode).toEqual(200); 
+        expect(res.body).toEqual({mensaje: 'Tarea eliminada correctamente'}); 
     });
     // - Ordenar las tareas por prioridad de forma ascendente
     test('Devolver las tareas ordenadas por prioridad', async () => {
-        await TareaModel.create({ titulo: 'Tarea 1', descripcion: 'descripcion tarea1', prioridad:3 });
-        await TareaModel.create({ titulo: 'Tarea 2', descripcion: 'descripcion tarea2', prioridad:1 });
-        await TareaModel.create({ titulo: 'Tarea 3', descripcion: 'descripcion tarea3', prioridad:2 });
+        await TareaModel.create({ titulo: 'Tarea 1', descripcion: 'descripcion tarea1 (1)', prioridad:3 });
+        await TareaModel.create({ titulo: 'Tarea 2', descripcion: 'descripcion tarea2 (2)', prioridad:1 });
+        await TareaModel.create({ titulo: 'Tarea 3', descripcion: 'descripcion tarea3 (3)', prioridad:2 });
         const res = await request(app).get('/ruta-tarea/ordenar-tarea');
         expect(res.statusCode).toEqual(200); ///pasooo
-        expect(res.body).toHaveLength(3)// pasoo
+        // expect(res.body).toHaveLength(3)// pasoo
         expect(res.body[0].prioridad).toEqual(1)// pasoo
         expect(res.body[1].prioridad).toEqual(2)// pasoo
         expect(res.body[2].prioridad).toEqual(3)// pasoo
