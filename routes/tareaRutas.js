@@ -14,7 +14,7 @@ rutas.get('/', async (req, res) =>{
 });
 
 rutas.post('/agregar', async (req, res) =>{
-    // console.log(req.body);
+    console.log(req.body);
     const nuevaTarea = new TareaModel({
         titulo: req.body.titulo,
         descripcion: req.body.descripcion,

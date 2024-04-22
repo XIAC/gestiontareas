@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors')
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const Usuario = require('./models/Usuario');
@@ -10,8 +11,14 @@ const tareasRutas = require('./routes/tareaRutas');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGO_URL;
+const rutas = express.Router();
 //configurar express para JSON
 app.use(express.json());
+const corsOptions = {
+    origin: ['http://localhost:1500', 'http://localhost:1500/'],
+    optionsSuccessStatus: 200 
+  };
+app.use(cors(corsOptions));
 //conexion con la db
 mongoose.connect(MONGODB_URI)
     .then(() => {
@@ -37,6 +44,6 @@ const autenticar =  async (req, res, next) =>{
 };
 
 app.use('/auth', authRutas);
-app.use('/ruta-tarea',autenticar, tareasRutas)
+// app.use('/ruta-tarea',autenticar, tareasRutas)
 
-// app.use('/ruta-tarea',tareasRutas)
+app.use('/ruta-tarea',tareasRutas)
